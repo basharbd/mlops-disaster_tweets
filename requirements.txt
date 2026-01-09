@@ -1,0 +1,10 @@
+torch
+pytorch-lightning
+transformers
+wandb
+python-dotenv
+hydra-core
+numpy
+pandas
+click
+scikit-learn
