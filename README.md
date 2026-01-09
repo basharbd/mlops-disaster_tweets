@@ -1,10 +1,26 @@
-# disaster_tweets
+# Disaster Tweet Classification
 
-A project to classify disaster tweets.
+## Overall Goal
+The primary objective of this project is to develop a robust, production-ready MLOps pipeline for Natural Language Processing (NLP). We aim to build a system that classifies Twitter messages to determine if they refer to real-world disasters. Our focus is on reproducibility (Docker), automation (CI/CD), and scalability (PyTorch Lightning).
+
+## Data
+We utilize the Kaggle 'Natural Language Processing with Disaster Tweets' dataset:
+- **Input:** Tweets containing text, keywords, and location.
+- **Target:** Binary classification (1 = Real Disaster, 0 = Not Disaster).
+- **Challenges:** Noisy data requiring significant cleaning.
+
+## Models
+We will use Transfer Learning with **DistilBERT**:
+- **Architecture:** DistilBERT (via Hugging Face) wrapped in PyTorch Lightning.
+- **Why:** Balances performance and inference speed.
+- **Experiments:** We will track performance using Weights & Biases.
+
+---
 
 ## Project structure
 
 The directory structure of the project looks like this:
+
 ```txt
 ├── .github/                  # Github actions and dependabot
 │   ├── dependabot.yaml
@@ -48,7 +64,6 @@ The directory structure of the project looks like this:
 ├── requirements_dev.txt      # Development requirements
 └── tasks.py                  # Project tasks
 ```
-
 
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
