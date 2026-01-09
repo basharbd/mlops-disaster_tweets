@@ -1,19 +1,25 @@
 # Disaster Tweet Classification
 
-## Overall Goal
-The primary objective of this project is to develop a robust, production-ready MLOps pipeline for Natural Language Processing (NLP). We aim to build a system that classifies Twitter messages to determine if they refer to real-world disasters. Our focus is on reproducibility (Docker), automation (CI/CD), and scalability (PyTorch Lightning).
+## Overall Goal of the Project
+The primary objective of this project is to develop a robust, production-ready MLOps pipeline for Natural Language Processing (NLP). In the context of emergency response, social media is a critical source of real-time information. However, manually monitoring Twitter for actionable data is impossible due to the high volume of noise. We aim to build a system that automatically classifies Twitter messages to determine if they refer to real-world disasters (e.g., fires, earthquakes, floods) or if they are metaphorical/irrelevant.
 
-## Data
-We utilize the Kaggle 'Natural Language Processing with Disaster Tweets' dataset:
-- **Input:** Tweets containing text, keywords, and location.
-- **Target:** Binary classification (1 = Real Disaster, 0 = Not Disaster).
-- **Challenges:** Noisy data requiring significant cleaning.
+Beyond simple accuracy, our focus is on the **Machine Learning Operations (MLOps)** lifecycle. We aim to solve common challenges in deploying NLP models, such as environment inconsistency, lack of reproducibility, and opaque experiment tracking. Our pipeline emphasizes:
+1.  **Reproducibility:** A fully containerized environment using **Docker** to ensure the code runs identically on local machines and cloud instances.
+2.  **Automation:** Continuous Integration (CI) pipelines via **GitHub Actions** to automatically lint code, run unit tests, and verify model builds on every commit.
+3.  **Scalability:** Efficient training loops and hardware acceleration using **PyTorch Lightning**, allowing for easy transition between CPU and GPU resources.
+4.  **Experiment Tracking:** Using **Weights & Biases (W&B)** to log hyperparameters, loss curves, and model artifacts, ensuring that every result can be traced back to a specific configuration.
 
-## Models
-We will use Transfer Learning with **DistilBERT**:
-- **Architecture:** DistilBERT (via Hugging Face) wrapped in PyTorch Lightning.
-- **Why:** Balances performance and inference speed.
-- **Experiments:** We will track performance using Weights & Biases.
+## Data Description
+We utilize the **Kaggle "Natural Language Processing with Disaster Tweets"** dataset, which consists of approximately 10,000 hand-labeled tweets.
+-   **Input Data:** Each sample contains the raw text of the tweet, a  (e.g., "ablaze", "accident"), and a  (though this field is often blank or noisy).
+-   **Target Variable:** A binary label where `1` indicates a real disaster and `0` indicates a non-disaster.
+-   **Data Challenges:** The dataset is "noisy" and reflects real-world social media text. It contains URL links, HTML tags, emojis, slang, and misspellings. A significant part of our data pipeline (in `src/data`) focuses on cleaning these artifacts and tokenizing the text efficiently for Transformer models.
+
+## Model Architecture & Approach
+We intend to leverage **Transfer Learning** rather than training a model from scratch.
+-   **Architecture:** We will fine-tune **DistilBERT**, a distilled version of the BERT transformer. This model provides a strong balance, retaining 97% of BERT's performance while being 40% lighter and 60% faster, making it ideal for a potential real-time API.
+-   **Training:** The model training is implemented in **PyTorch** and wrapped in **PyTorch Lightning** to handle engineering boilerplate (checkpointing, logging, device management).
+-   **Evaluation:** We will use **F1-score** and **Accuracy** as our primary metrics. Since disaster detection often suffers from class imbalance, F1-score will be critical to ensure we are not just predicting the majority class. We will also monitor training loss to detect overfitting early.
 
 ---
 
