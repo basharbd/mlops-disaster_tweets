@@ -21,6 +21,7 @@ We intend to leverage **Transfer Learning** rather than training a model from sc
 -   **Training:** The model training is implemented in **PyTorch** and wrapped in **PyTorch Lightning** to handle engineering boilerplate (checkpointing, logging, device management).
 -   **Evaluation:** We will use **F1-score** and **Accuracy** as our primary metrics. Since disaster detection often suffers from class imbalance, F1-score will be critical to ensure we are not just predicting the majority class. We will also monitor training loss to detect overfitting early.
 
+
 ---
 
 ## Project structure
@@ -74,3 +75,22 @@ The directory structure of the project looks like this:
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
+
+
+## Quickstart
+
+```bash
+# 1) clone + enter
+git clone https://github.com/basharbd/mlops-disaster_tweets.git
+cd mlops-disaster_tweets
+
+# 2) create env (conda) + install
+conda create -n mlops-disaster python=3.11 -y
+conda activate mlops-disaster
+pip install -r requirements.txt
+pip install -r requirements_dev.txt
+
+# 3) prepare data + train + test
+python -m disaster_tweets.data
+python -m disaster_tweets.train
+pytest -q
