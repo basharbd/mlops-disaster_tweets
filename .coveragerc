@@ -1,0 +1,9 @@
+[run]
+omit =
+    tests/*
+    */site-packages/*
+    */dist-packages/*
+
+[report]
+ignore_errors = True
+show_missing = True
