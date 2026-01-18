@@ -1,6 +1,7 @@
-import pytest
 import torch
+
 from disaster_tweets.models import DisasterTweetModel
+
 
 def test_model_output_shape():
     # 1. Setup: Create the model
@@ -21,4 +22,6 @@ def test_model_output_shape():
 
     # 3. Assertion: Check output shape
     # We expect [batch_size, 2] because we have 2 classes (Disaster vs Not Disaster)
-    assert output.shape == (batch_size, 2), f"Expected output shape {(batch_size, 2)}, but got {output.shape}"
+    assert output.shape == (batch_size, 2), (
+        f"Expected output shape {(batch_size, 2)}, but got {output.shape}"
+    )
