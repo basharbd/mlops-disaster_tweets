@@ -1,16 +1,22 @@
-FROM python:3.12-slim AS base
+# 1. Base Image
+FROM python:3.10-slim
 
-RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+# 2. Set working directory inside the container
+WORKDIR /app
 
-COPY src src/
+# 3. Copy files from your laptop to the container
+# We copy requirements first to cache dependencies (makes building faster)
 COPY requirements.txt requirements.txt
-COPY requirements_dev.txt requirements_dev.txt
-COPY README.md README.md
 COPY pyproject.toml pyproject.toml
 
-RUN pip install -r requirements.txt --no-cache-dir --verbose
-RUN pip install . --no-deps --no-cache-dir --verbose
+# 4. Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+# Install your own project as a package
+COPY src/ src/
+RUN pip install --no-cache-dir .
 
-ENTRYPOINT ["uvicorn", "src.disaster_tweets.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# 5. Open port 8000 so the world can talk to the API
+EXPOSE 8000
+
+# 6. Run the server
+CMD ["python", "-m", "uvicorn", "src.disaster_tweets.api:app", "--host", "0.0.0.0", "--port", "8000"]

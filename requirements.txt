@@ -8,3 +8,5 @@ numpy
 pandas
 click
 scikit-learn
+fastapi
+uvicorn
