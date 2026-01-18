@@ -1,4 +1,5 @@
 torch
+pytorch-lightning
 transformers
 fastapi
 uvicorn
