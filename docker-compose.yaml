@@ -1,0 +1,21 @@
+services:
+  # The API Service
+  api:
+    build:
+      context: .
+      dockerfile: dockerfiles/api.dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/app/models  # Mounts your local models folder
+    environment:
+      - MODEL_PATH=/app/models/model.ckpt
+
+  # The Training Service (runs and then stops)
+  train:
+    build:
+      context: .
+      dockerfile: dockerfiles/train.dockerfile
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
