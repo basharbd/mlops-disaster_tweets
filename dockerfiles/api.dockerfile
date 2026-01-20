@@ -1,23 +1,23 @@
-FROM --platform=linux/amd64 python:3.10-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install dependencies
+# Install system dependencies
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+# 1. Install dependencies first (for better caching)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir pytorch-lightning
 
-# Copy everything needed into the /app folder
-COPY static/ /app/static/
-COPY models/ /app/models/
-COPY src/disaster_tweets/ /app/disaster_tweets/
-# Also copy the files into the root of /app to make imports easy
-COPY src/disaster_tweets/*.py /app/
+# 2. Copy the whole project including setup.py and src/
+COPY . .
 
-# Set the working directory to where the code is
-ENV PYTHONPATH=/app
-ENV PORT=8080
+# 3. Install the project itself as a package
+RUN pip install -e .
 
 EXPOSE 8080
 
-# Start the app
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]
+# Use the full package path to start the app
+CMD ["uvicorn", "disaster_tweets.api:app", "--host", "0.0.0.0", "--port", "8080"]
