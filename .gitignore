@@ -182,7 +182,6 @@ lightning_logs/
 
 # Ignore heavy folders and files
 wandb/
-data/
 models/
 *.pt
 *.ckpt
@@ -190,3 +189,5 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+google-cloud-sdk/
+google-cloud-cli-darwin-x86_64.tar.gz

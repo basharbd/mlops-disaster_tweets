@@ -10,11 +10,12 @@ def train():
     print("Preparing data...")
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
 
-    # Load the processed CSVs we created earlier
-    train_dataset = DisasterTweetsDataset(
-        "data/processed/train_processed.csv", tokenizer
-    )
-    val_dataset = DisasterTweetsDataset("data/processed/val_processed.csv", tokenizer)
+    # Load data from Google Cloud Storage
+    bucket_path = "data/processed"
+
+    print(f"Loading data from {bucket_path}...")
+    train_dataset = DisasterTweetsDataset(f'{bucket_path}/train_processed.csv', tokenizer)
+    val_dataset = DisasterTweetsDataset(f'{bucket_path}/val_processed.csv', tokenizer)
 
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=32, num_workers=0)

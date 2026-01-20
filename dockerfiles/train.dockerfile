@@ -1,16 +1,21 @@
-FROM python:3.12-slim AS base
+# Use a lightweight Python base image
+FROM python:3.10-slim
 
-RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+# Set the working directory
+WORKDIR /app
 
-COPY src src/
-COPY requirements.txt requirements.txt
-COPY requirements_dev.txt requirements_dev.txt
-COPY README.md README.md
-COPY pyproject.toml pyproject.toml
+# Install git (needed for some dependencies)
+RUN apt-get update && apt-get install -y git
 
-RUN pip install -r requirements.txt --no-cache-dir --verbose
-RUN pip install . --no-deps --no-cache-dir --verbose
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["python", "-u", "src/disaster_tweets/train.py"]
+# Copy the source code
+COPY src/ src/
+
+# Set the Python path so it finds your modules
+ENV PYTHONPATH=/app/src
+
+# The command to run when the container starts
+CMD ["python", "src/disaster_tweets/train.py"]

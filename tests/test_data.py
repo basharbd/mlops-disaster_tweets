@@ -1,47 +1,57 @@
-import os
-
 import pytest
 import torch
-
+import pandas as pd
+from transformers import AutoTokenizer
 from disaster_tweets.data import DisasterTweetsDataset
 
+# 1. Create a dummy CSV file
+@pytest.fixture
+def mock_csv(tmp_path):
+    data = {
+        "text": ["Disaster happened", "Just chilling", "Fire everywhere", "Sunny day", "Help me"],
+        "target": [1, 0, 1, 0, 1]
+    }
+    df = pd.DataFrame(data)
+    file_path = tmp_path / "dummy_train.csv"
+    df.to_csv(file_path, index=False)
+    return str(file_path)
 
-class MockTokenizer:
-    def encode_plus(
-        self,
-        text,
-        add_special_tokens=True,
-        max_length=128,
-        return_token_type_ids=False,
-        padding="max_length",
-        truncation=True,
-        return_attention_mask=True,
-        return_tensors="pt",
-    ):
-        return {
-            "input_ids": torch.ones((1, max_length), dtype=torch.long),
-            "attention_mask": torch.ones((1, max_length), dtype=torch.long),
-        }
+# 2. Load the Tokenizer (New!)
+@pytest.fixture(scope="module")
+def tokenizer():
+    return AutoTokenizer.from_pretrained("google/bert_uncased_L-2_H-128_A-2")
 
+# 3. Update Tests to use the Tokenizer
+def test_dataset_loading(mock_csv, tokenizer):
+    """Test that the dataset loads correctly from a CSV file."""
+    # PASS THE TOKENIZER HERE 👇
+    dataset = DisasterTweetsDataset(mock_csv, tokenizer)
 
-@pytest.mark.skipif(
-    not os.path.exists("data/processed/train_processed.csv"),
-    reason="Data files not found",
-)
-def test_data_loading():
-    tokenizer = MockTokenizer()
-    train_path = "data/processed/train_processed.csv"
+    assert len(dataset) == 5, "Dataset length should match the number of rows in the CSV"
 
-    dataset = DisasterTweetsDataset(train_path, tokenizer)
-
-    assert len(dataset) > 0, "Dataset should not be empty"
-
+def test_dataset_item_structure(mock_csv, tokenizer):
+    """Test that the dataset returns the correct keys and shapes."""
+    dataset = DisasterTweetsDataset(mock_csv, tokenizer)
     sample = dataset[0]
 
-    # Check for the keys that actually exist in your data
-    assert "input_ids" in sample
-    assert "attention_mask" in sample
-    assert "label" in sample  # <--- CHANGED from "labels" to "label"
+    # UPDATED: Match exactly what your dataset returns
+    expected_keys = {"text", "input_ids", "attention_mask", "label"}
 
-    assert torch.is_tensor(sample["input_ids"])
-    assert torch.is_tensor(sample["label"])
+    # Verify keys exist (using set comparison to ignore order)
+    assert set(sample.keys()) == expected_keys, f"Key mismatch! Found: {sample.keys()}"
+
+    # Check tensor shapes
+    assert sample["input_ids"].shape == (128,), f"Expected (128,), got {sample['input_ids'].shape}"
+    assert sample["attention_mask"].shape == (128,)
+
+    # UPDATED: Key is 'label' (singular), not 'labels'
+    assert isinstance(sample["label"], torch.Tensor)
+    assert sample["label"].ndim == 0
+
+def test_dataset_tokenization(mock_csv, tokenizer):
+    """Test that tokenization is actually working."""
+    dataset = DisasterTweetsDataset(mock_csv, tokenizer)
+    sample = dataset[0] # "Disaster happened"
+
+    # 101 is the [CLS] token that starts every BERT sentence
+    assert sample["input_ids"][0] == 101, "Tokenization should start with [CLS] token id 101"

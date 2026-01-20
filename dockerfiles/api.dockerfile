@@ -1,22 +1,23 @@
-# 1. Base Image
-FROM python:3.10-slim
+FROM --platform=linux/amd64 python:3.10-slim
 
-# 2. Set working directory inside the container
 WORKDIR /app
 
-# 3. Copy files from your laptop to the container
-# We copy requirements first to cache dependencies (makes building faster)
-COPY requirements.txt requirements.txt
-COPY pyproject.toml pyproject.toml
-
-# 4. Install dependencies
+# Install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Install your own project as a package
-COPY src/ src/
-RUN pip install --no-cache-dir .
 
-# 5. Open port 8000 so the world can talk to the API
-EXPOSE 8000
+# Copy everything needed into the /app folder
+COPY static/ /app/static/
+COPY models/ /app/models/
+COPY src/disaster_tweets/ /app/disaster_tweets/
+# Also copy the files into the root of /app to make imports easy
+COPY src/disaster_tweets/*.py /app/
 
-# 6. Run the server
-CMD ["python", "-m", "uvicorn", "src.disaster_tweets.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set the working directory to where the code is
+ENV PYTHONPATH=/app
+ENV PORT=8080
+
+EXPOSE 8080
+
+# Start the app
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]

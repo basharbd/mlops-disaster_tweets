@@ -12,3 +12,5 @@ python-dotenv
 hydra-core
 wandb
 scikit-learn
+locust
+gcsfs

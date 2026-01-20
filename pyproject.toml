@@ -16,3 +16,16 @@ line-length = 88
 [tool.ruff.lint]
 # specific rules to ignore if needed
 ignore = ["E501"] # Ignore line too long
+
+[tool.pytest.ini_options]
+# 1. Look for tests only in the "tests" folder
+testpaths = ["tests"]
+
+# 2. Add "src" to the python path so imports work correctly
+pythonpath = ["src"]
+
+# 3. IGNORE the Google Cloud SDK and other junk folders
+norecursedirs = ["google-cloud-sdk", ".git", ".dvc", "__pycache__"]
+
+# 4. Show locally defined variables if a test crashes (helpful for debugging)
+addopts = "-ra -q"
