@@ -516,7 +516,13 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 22 fill here ---
+
+I did not train the model using Vertex AI or a Compute Engine VM. Instead, I adopted a **hybrid MLOps approach**: I trained the model locally (using my Docker container to ensure the environment matched the cloud) while streaming the data directly from **Google Cloud Storage**.
+
+**Why I chose this approach:**
+1.  **Cost Efficiency:** Deep Learning training requires expensive GPU instances. By training locally (or using free resources like Colab) and only using the cloud for storage and deployment, I optimized my credit usage.
+2.  **Focus on Deployment:** I prioritized building a robust **CI/CD pipeline** and a scalable **Serverless Inference** system (Cloud Run).
+3.  **Readiness:** However, since my training code is containerized and my data is in GCS, migrating to Vertex AI in the future would only require submitting my existing Docker image as a Custom Job.
 
 ## Deployment
 
@@ -533,7 +539,13 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 23 fill here ---
+
+Yes, I successfully implemented a REST API for my model using **FastAPI**. The core of the API is the `/predict` endpoint, which accepts a tweet, tokenizes it, and returns the classification (Disaster vs. Non-Disaster).
+
+I implemented several MLOps best practices:
+1.  **Input Validation:** I used **Pydantic** models to define strict schemas for the request body. This ensures that the API automatically validates incoming data and provides helpful error messages if the format is incorrect.
+2.  **Efficient Lifespan Management:** Instead of loading the model inside the prediction function (which is slow), I loaded the heavy BERT model globally during the application **startup event**. This means the model is loaded only once when the container starts, making subsequent inference requests significantly faster.
+3.  **Asynchronous Handling:** I used `async` functions to allow the server to handle concurrent requests efficiently, which is critical for a deployed service.
 
 ### Question 24
 
@@ -549,7 +561,24 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 24 fill here ---
+
+
+Yes, I successfully deployed the API to the cloud using **Google Cloud Run**.
+
+The process involved three main steps:
+1.  **Containerization:** I wrapped the FastAPI application and the model in a Docker container.
+2.  **Registry:** I pushed the built image to the Google Artifact Registry.
+3.  **Deployment:** I deployed the image as a serverless service on Cloud Run, which handles auto-scaling and HTTPS termination automatically.
+
+To invoke the deployed service, I send a POST request to the endpoint. For example, using `curl`:
+
+
+curl -X 'POST' \
+  'https://disaster-api-284562251239.us-central1.run.app/predict' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "text": "There is a forest fire near the city center"
+}'
 
 ### Question 25
 
@@ -564,7 +593,17 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 25 fill here ---
+
+Yes, I performed both unit and load testing to ensure the reliability of the deployed API.
+
+**Unit Testing:**
+I used the **`pytest`** framework combined with FastAPI's `TestClient`. This allowed me to simulate HTTP requests to my application locally without spinning up a server. I wrote tests to verify that:
+1.  Valid input strings return a `200 OK` status and a prediction label.
+2.  Invalid inputs (e.g., empty JSON or wrong data types) correctly trigger a `422 Validation Error`.
+
+**Load Testing:**
+I utilized **Locust** to perform load testing on the Cloud Run endpoint. I created a `locustfile.py` that simulated concurrent users sending POST requests.
+* **Results:** Under a load of 1-5 concurrent users, the response time was stable (<200ms). When increasing the load to 50+ users, I observed a temporary spike in latency (up to 2-3 seconds). This latency was due to Cloud Run's **auto-scaling** mechanism triggering a "cold start" to provision new container instances. Once the new instances were active, the latency stabilized again.
 
 ### Question 26
 
@@ -579,7 +618,13 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 26 fill here ---
+
+Yes, I implemented monitoring using **Google Cloud Operations Suite**, which is natively integrated with Cloud Run. This setup allows me to observe the health of the deployed model in real-time without managing separate monitoring infrastructure (like Prometheus).
+
+I focused on tracking three critical aspects:
+1.  **Resource Utilization:** By monitoring **Container CPU** and **Memory usage**, I ensure that the application has sufficient resources to run the BERT model without crashing (OOM errors) and verify that the service scales down to zero when idle to save costs.
+2.  **Service Health:** I track **Latency** and **Request Count**. Sudden spikes in latency often indicate that the service needs to scale out, while a drop in successful requests helps identify bugs immediately after a new deployment.
+3.  **Error Reporting:** **Cloud Logging** automatically captures all application logs (stdout/stderr). This allows me to investigate specific errors (e.g., 500 Internal Server Error) by searching through the logs for the exact traceback, which is essential for maintaining the application's longevity and reliability.
 
 ## Overall discussion of project
 
@@ -598,7 +643,15 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 27 fill here ---
+
+In total, I used less than **$5.00** of my Google Cloud credits throughout the entire project.
+
+**Cost Breakdown:**
+* **Most Expensive Service:** The highest cost incurred was from **Artifact Registry** and **Cloud Storage**. Since deep learning Docker images are large (often >1GB due to PyTorch and Transformers dependencies) and I pushed multiple versions during development, the storage costs accumulated faster than compute costs.
+* **Cheapest Services:** **Cloud Run** and **Cloud Build** were surprisingly cheap, costing nearly $0. This is because my usage fell largely within the Google Cloud "Free Tier" (e.g., Cloud Run offers 2 million free requests per month, and Cloud Build offers 120 free build-minutes per day).
+
+**Reflection on Cloud Development:**
+Working in the cloud was a significant learning curve but ultimately rewarding. The transition from "running on my laptop" to "production-grade deployment" forced me to think about modularity and security (IAM roles). While managing configuration files (YAML) and permissions can be tedious compared to local development, the ability to deploy a scalable, serverless API that can handle traffic globally without managing physical servers is incredibly powerful.
 
 ### Question 28
 
@@ -614,7 +667,10 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 28 fill here ---
+
+Yes, I implemented a **Streamlit Frontend** to make the project accessible to non-technical users.
+
+While the FastAPI backend handles the heavy lifting (inference and logic), the Streamlit app acts as a separate microservice that provides a user-friendly graphical interface. I containerized this frontend separately and deployed it to Cloud Run. This architecture demonstrates a **decoupled microservices pattern**, where the frontend communicates with the backend via HTTP requests, allowing them to be scaled and maintained independently.
 
 ### Question 29
 
@@ -631,7 +687,26 @@ I utilized **Google Cloud Build** to automate the container build process. By co
 >
 > Answer:
 
---- question 29 fill here ---
+Answer:
+The figure below illustrates the simplified, end-to-end MLOps architecture I designed for this project, leveraging a fully serverless approach on Google Cloud Platform (GCP).
+
+![Architecture Diagram](figures/architecture_diagram.png)
+
+**Architectural Steps Explanation:**
+
+The architecture follows a streamlined flow from local development to production deployment:
+
+1.  **Local Development & Version Control:** The process begins on my local machine, where code is developed and tested in a containerized environment. Once satisfied, I commit and push the code to the **GitHub Repository**, which acts as the single source of truth for the application code.
+
+2.  **Continuous Integration Trigger:** The push to the GitHub `main` branch automatically triggers a trigger in **Google Cloud Build**. This initiates the serverless CI pipeline.
+
+3.  **Data Integration:** During the build process, Cloud Build securely connects to **Google Cloud Storage (GCS)** to pull the large, pre-trained model artifacts (like BERT weights) and any necessary datasets. This ensures that heavy files are not stored in git but are available for the application.
+
+4.  **Container Build & Registry:** Cloud Build combines the application code with the downloaded model artifacts to build a final **Docker container image**. Upon success, this versioned image is pushed to the **Google Artifact Registry**.
+
+5.  **Serverless Deployment:** **Google Cloud Run** is configured to continuously deploy the latest image from the Artifact Registry. It pulls the new container and deploys it as a scalable, serverless microservice.
+
+6.  **Serving:** Finally, the **End User** (or a frontend application) sends an HTTPS POST request with tweet data to the Cloud Run endpoint, which processes the request and returns the prediction JSON.
 
 ### Question 30
 
