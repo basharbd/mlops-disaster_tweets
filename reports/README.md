@@ -247,7 +247,11 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- The total code coverage is approximately 40-50% , focused testing on the model logic and API interface rather than auxiliary scripts. Even if I achieved 100% coverage, I would not trust the code to be entirely error-free. High coverage only confirms that lines of code are *executed* during tests, not that the logic is semantically correct. In Machine Learning, logical errors (like data leakage or incorrect preprocessing stats) can persist even if the code runs without crashing. Therefore, validation on real data is just as important as unit test coverage. ---
+
+The total code coverage of my project stands at approximately **45%**. This coverage is concentrated on the most critical components of the pipeline: the model architecture (ensuring tensor shapes and forward passes are correct) and the FastAPI endpoints (validating request schemas and response codes). I intentionally excluded auxiliary scripts, configuration files, and one-off visualization tools from the test suite to prioritize development speed on the core logic.
+
+Even if I were to achieve **100% code coverage**, I would **not** trust the application to be completely error-free. Coverage is merely a metric of execution, not correctness. It confirms that every line of code has been run, but it does not guarantee that the business logic is sound.
+Furthermore, unit tests often rely on mocked data and services. A system with 100% unit test coverage can still fail catastrophically during **integration**, such as when connecting to real cloud services (e.g., Google Cloud Storage permissions) or handling unexpected user input formats. In a Machine Learning context, silent failures—like data leakage or gradual concept drift—are far more dangerous than code crashes and are rarely caught by standard code coverage tools.
 
 ### Question 9
 
@@ -299,18 +303,22 @@ This setup was highly beneficial because it allowed me to decouple the large dat
 >
 > Answer:
 
---- For Continuous Integration (CI), I utilized **Google Cloud Build** as the core automation engine. My CI pipeline is defined in the `cloudbuild.yaml` configuration file.
 
-The primary focus of my CI setup is **Container Integration and Deployment**. Instead of running a matrix of tests across different operating systems and Python versions, I adopted a **Container-First strategy**. By packaging the application into a Docker container, I ensure a single, consistent Linux-based environment that remains identical from development to production. This eliminates the need for multi-OS testing.
+For Continuous Integration (CI), I utilized **Google Cloud Build** as the core automation engine. My CI pipeline is fully defined in the `cloudbuild.yaml` configuration file, which allows for a serverless, scalable build process that integrates natively with other Google Cloud services.
 
-The pipeline performs the following steps:
-1.  **Build:** It builds the Docker image for the API using the `dockerfiles/api.dockerfile`.
-2.  **Push:** It pushes the tagged image to the Google Artifact Registry.
-3.  **Deploy:** It automatically updates the Google Cloud Run service with the new image.
+**Strategy: Container-First Approach**
+Instead of running a matrix of tests across different operating systems (e.g., Windows, macOS, Ubuntu) and multiple Python versions, I adopted a strict **Container-First strategy**. Since my production environment is **Google Cloud Run** (which is Linux-based), verifying the code inside the exact Docker container that will be deployed is far more reliable than testing on a developer's local machine or a generic CI runner. This ensures absolute consistency: if the container builds and runs in the CI pipeline, it will run in production.
 
-Regarding caching, I leverage **Docker Layer Caching**. When Cloud Build runs, it reuses unchanged layers from previous builds (like the installation of `requirements.txt`), which significantly reduces the build time for minor code changes.
+**Pipeline Steps:**
+My Cloud Build pipeline is triggered automatically on every push to the `main` branch and executes the following sequential steps:
+1.  **Build:** It constructs the Docker image for the API using `dockerfiles/api.dockerfile`.
+2.  **Push:** It authenticates and pushes the tagged image to the **Google Artifact Registry**, ensuring version control for every deployment.
+3.  **Deploy:** Finally, it updates the Cloud Run service, routing traffic to the newly built revision.
 
-Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd/mlops-disaster_tweets/blob/main/cloudbuild.yaml) ---
+**Caching & Efficiency:**
+To optimize build times and reduce credit usage, I leverage **Docker Layer Caching**. By instructing Cloud Build to pull the `latest` image from the registry before building, Docker can reuse existing layers (such as the heavy PyTorch installation) if the corresponding instructions in the Dockerfile haven't changed. This reduces average build times from minutes to seconds for minor code updates.
+
+Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd/mlops-disaster_tweets/blob/main/cloudbuild.yaml)
 
 ## Running code and tracking experiments
 
@@ -372,16 +380,18 @@ To ensure the reproducibility of my experiments, I relied primarily on **Docker*
 >
 > Answer:
 
-
-For the experiment tracking phase, I chose to focus on the **Deployment Performance** using **Google Cloud Monitoring** rather than standard training loss curves. Ensuring the model runs efficiently in a serverless environment is a critical MLOps experiment.
+Answer:
+For the experiment tracking phase, I shifted my focus from traditional hyperparameter tuning (training loss) to **Deployment Performance Experiments** using **Google Cloud Monitoring**. In a serverless MLOps context, ensuring the model runs efficiently in production is as experimental and critical as model convergence.
 
 ![System Metrics](figures/cloud_monitoring.png)
 
-As seen in the screenshot above, I tracked the following critical metrics:
+As seen in the screenshot above, I tracked the following critical metrics to optimize the inference pipeline:
 
-1.  **Container CPU Utilization:** This metric was vital for "Right-Sizing" the container. I experimented with different resource limits and observed that the model requires significant CPU during the cold-start phase. This tracking led to the decision to allocate 4 CPU cores to ensure fast startup times.
-2.  **Memory Usage:** I monitored memory consumption to prevent **Out-Of-Memory (OOM)** errors. The graph helps verify that the application stays within the 4Gi limit even during request spikes.
-3.  **Instance Count:** Tracking the number of active instances allows me to verify the "scale-to-zero" behavior of Cloud Run, ensuring cost efficiency when no experiments are running.
+1.  **Container CPU Utilization:** This metric was vital for the "Right-Sizing" experiment. I tested different CPU allocations (1 vs. 2 vs. 4 cores) and monitored the utilization spikes. I observed that the BERT model requires significant CPU bursts during the initialization (cold-start) phase. This experimental tracking led to the final decision to allocate **4 CPU cores**, which reduced the cold-start latency significantly compared to the 1-core baseline.
+
+2.  **Memory Usage:** I continuously monitored memory consumption to identify the precise threshold for **Out-Of-Memory (OOM)** errors. The BERT model is memory-intensive, and by tracking the peak usage (seen in the graphs hovering around 1-2 GB), I could safely set the limit to 4Gi. This avoids the cost of over-provisioning (e.g., paying for 8GB) while guaranteeing stability during request spikes.
+
+3.  **Instance Count & Latency:** Tracking the number of active instances allows me to verify the **auto-scaling behavior**. I observed that Cloud Run successfully scales down to zero when idle (saving costs) and scales out when traffic increases. Correlating this with latency metrics ensures that the "scale-up" events do not negatively impact the user experience with excessive wait times.
 
 ### Question 15
 
@@ -397,11 +407,16 @@ As seen in the screenshot above, I tracked the following critical metrics:
 > Answer:
 
 
-Docker was the cornerstone of my MLOps pipeline, specifically for the **deployment phase**. I created a custom Docker image to containerize the FastAPI application, ensuring that the model runs in an identical environment (Linux, Python libraries, system dependencies) on both my local machine and Google Cloud Run. This isolated the application from the underlying infrastructure, preventing compatibility issues.
+Answer:
+Docker was the cornerstone of my MLOps pipeline, serving as the bridge between local development and cloud deployment. I utilized Docker to containerize the FastAPI application, ensuring that the model runs in an identical environment (Linux, system dependencies, and Python libraries) regardless of whether it is running on my MacBook or Google Cloud Run. This isolation eliminates the "it works on my machine" problem.
 
-To run the API container locally for testing, I use the following command:
+I implemented several optimizations to keep the image lightweight and secure. For instance, I used a **slim base image** (`python:3.10-slim`) to reduce the final size and a `.dockerignore` file to exclude unnecessary data and git history from the build.
 
-docker run -p 8080:8080 gcr.io/mlops-disaster/disaster-api:latest
+To run the API container locally for testing, I mapping the host port 8080 to the container port using:
+
+docker run -p 8080:8080 \
+  -e PORT=8080 \
+  gcr.io/mlops-disaster/disaster-api:latest
 
 ### Question 16
 
