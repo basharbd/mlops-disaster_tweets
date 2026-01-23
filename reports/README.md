@@ -168,7 +168,15 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 4 fill here ---
+--- I managed the project dependencies using a standard `requirements.txt` file. This file lists all necessary Python packages (such as `fastapi`, `uvicorn`, `google-cloud-storage`, `torch`, etc.) with pinned versions to ensure reproducibility across different environments.
+
+For any potential new team member to get an exact copy of my development environment, they would need to follow this process:
+1. Clone the repository: `git clone <https://github.com/basharbd/mlops-disaster_tweets>`
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the environment: `source venv/bin/activate` 
+4. Install dependencies: `pip install -r requirements.txt`
+
+This setup ensures that all developers and our Docker containers utilize the exact same library versions, preventing "it works on my machine" issues. ---
 
 ### Question 5
 
@@ -184,7 +192,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 5 fill here ---
+--- I initialized the project using the course-provided cookiecutter template, which gave me a robust "src-layout" structure. The core source code resides in `src/disaster_tweets/`, containing modules for the model (`model.py`), data processing, and the API (`api.py`).
+
+I largely adhered to the template but made specific deviations to accommodate MLOps workflow. Most notably, we added a dedicated `dockerfiles/` directory to organize  different Docker builds (for training and API) rather than keeping them in the root. I also added `cloudbuild.yaml` files to the root to define our CI/CD pipelines for Google Cloud Build. I removed the documentation generation folders (like `docs`) as I focused on README-based documentation and the FastAPI automatic docs. ---
 
 ### Question 6
 
@@ -199,7 +209,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 6 fill here ---
+--- For code quality, I prioritized standard formatting and typing to ensure the codebase remained maintainable , additionally I utilized **Black** for automatic code formatting to keep a consistent style without manual debate.
+
+A key part of the code quality strategy was the use of **Type Hinting**, particularly within  FastAPI implementation. By using **Pydantic models** (e.g., `class PredictRequest(BaseModel)`), I enforced strict typing on incoming data, which automatically handles validation and reduces runtime errors.
+
+These concepts are vital in larger projects because they act as self-documentation. When multiple developers work on the same codebase, type hints and consistent formatting drastically reduce cognitive load, making it easier to understand function interfaces and prevent bugs caused by mismatched data types. ---
 
 ## Version control
 
