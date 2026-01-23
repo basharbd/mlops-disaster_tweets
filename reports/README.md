@@ -329,7 +329,14 @@ Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd
 >
 > Answer:
 
---- question 12 fill here ---
+
+I configured my experiments using **Hydra**, which allowed me to separate configuration from code. I defined all my hyperparameters (like learning rate, batch size) ).
+
+This setup made it easy to run different experiments without changing the code. To run a new experiment, I simply overrode the specific parameters from the command line.
+
+**Example:**
+
+python src/models/train_model.py training.lr=0.001 training.batch_size=64
 
 ### Question 13
 
@@ -344,7 +351,11 @@ Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd
 >
 > Answer:
 
---- question 13 fill here ---
+To ensure the reproducibility of my experiments, I relied primarily on **Docker** and **Deterministic Seeding**.
+
+1.  **Environment Control:** I used Docker to containerize my application. This ensures that the operating system, system libraries, and Python dependencies are frozen and identical every time the code runs, regardless of whether it is running on my local machine or in Google Cloud. This completely eliminates "it works on my machine" issues.
+2.  **Seeding:** To handle the stochastic nature of training neural networks, I implemented random seeding. At the beginning of my training script, I set fixed seeds for `torch`, `numpy`, and Python's `random` module. This ensures that weight initialization and data shuffling are deterministic.
+3.  **Data Consistency:** By keeping the dataset in Google Cloud Storage (as established in previous steps), I ensure that I am always pulling the same "source of truth" data for every run, rather than relying on potentially modified local files.
 
 ### Question 14
 
@@ -361,7 +372,16 @@ Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd
 >
 > Answer:
 
---- question 14 fill here ---
+
+For the experiment tracking phase, I chose to focus on the **Deployment Performance** using **Google Cloud Monitoring** rather than standard training loss curves. Ensuring the model runs efficiently in a serverless environment is a critical MLOps experiment.
+
+![System Metrics](figures/cloud_monitoring.png)
+
+As seen in the screenshot above, I tracked the following critical metrics:
+
+1.  **Container CPU Utilization:** This metric was vital for "Right-Sizing" the container. I experimented with different resource limits and observed that the model requires significant CPU during the cold-start phase. This tracking led to the decision to allocate 4 CPU cores to ensure fast startup times.
+2.  **Memory Usage:** I monitored memory consumption to prevent **Out-Of-Memory (OOM)** errors. The graph helps verify that the application stays within the 4Gi limit even during request spikes.
+3.  **Instance Count:** Tracking the number of active instances allows me to verify the "scale-to-zero" behavior of Cloud Run, ensuring cost efficiency when no experiments are running.
 
 ### Question 15
 
