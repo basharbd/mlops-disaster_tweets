@@ -94,3 +94,18 @@ pip install -r requirements_dev.txt
 python -m disaster_tweets.data
 python -m disaster_tweets.train
 pytest -q
+
+----
+
+# MLOps Disaster Tweets Project
+
+## 🚀 Deployment Status
+**Status:** Successfully Deployed on Google Cloud Run ✅
+**Live URL:** https://disaster-api-284562251239.us-central1.run.app/docs
+**Bucket Storage:** Verified (gs://dt-bucket-bashar-2026/predictions/)
+
+## 🛠️ Project Components
+- **Containerization:** Docker & Google Artifact Registry.
+- **CI/CD:** Google Cloud Build.
+- **Monitoring:** Google Cloud Monitoring (Alerting configured for CPU > 80%).
+- **Data Collection:** Predictions are automatically saved to GCS Bucket.
