@@ -24,6 +24,54 @@ We intend to leverage **Transfer Learning** rather than training a model from sc
 
 ---
 
+
+## Quickstart
+
+
+# 1) clone + enter
+git clone https://github.com/basharbd/mlops-disaster_tweets.git
+cd mlops-disaster_tweets
+
+# 2) create env (conda) + install
+conda create -n mlops-disaster python=3.11 -y
+conda activate mlops-disaster
+pip install -r requirements.txt
+pip install -r requirements_dev.txt
+
+# 3) prepare data + train + test
+python -m disaster_tweets.data
+python -m disaster_tweets.train
+pytest -q
+
+----
+
+
+
+
+# MLOps Disaster Tweets Project
+
+## 🚀 Deployment Status
+
+**Status:** Successfully Deployed on Google Cloud Run ✅
+
+**Live URL:** https://disaster-api-284562251239.us-central1.run.app/docs
+
+**Bucket Storage:** Verified (gs://dt-bucket-bashar-2026/predictions/)
+
+## 🛠️ Project Components
+
+- **Containerization:** Docker & Google Artifact Registry.
+  
+- **CI/CD:** Google Cloud Build.
+  
+- **Monitoring:** Google Cloud Monitoring (Alerting configured for CPU > 80%).
+  
+- **Data Collection:** Predictions are automatically saved to GCS Bucket.
+
+
+
+----
+
 ## Project structure
 
 The directory structure of the project looks like this:
@@ -77,35 +125,5 @@ a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for gett
 started with Machine Learning Operations (MLOps).
 
 
-## Quickstart
 
 
-# 1) clone + enter
-git clone https://github.com/basharbd/mlops-disaster_tweets.git
-cd mlops-disaster_tweets
-
-# 2) create env (conda) + install
-conda create -n mlops-disaster python=3.11 -y
-conda activate mlops-disaster
-pip install -r requirements.txt
-pip install -r requirements_dev.txt
-
-# 3) prepare data + train + test
-python -m disaster_tweets.data
-python -m disaster_tweets.train
-pytest -q
-
-----
-
-# MLOps Disaster Tweets Project
-
-## 🚀 Deployment Status
-**Status:** Successfully Deployed on Google Cloud Run ✅
-**Live URL:** https://disaster-api-284562251239.us-central1.run.app/docs
-**Bucket Storage:** Verified (gs://dt-bucket-bashar-2026/predictions/)
-
-## 🛠️ Project Components
-- **Containerization:** Docker & Google Artifact Registry.
-- **CI/CD:** Google Cloud Build.
-- **Monitoring:** Google Cloud Monitoring (Alerting configured for CPU > 80%).
-- **Data Collection:** Predictions are automatically saved to GCS Bucket.
