@@ -485,7 +485,11 @@ I utilized **Google Cloud Storage (GCS)** as the central data repository for the
 >
 > Answer:
 
---- question 20 fill here ---
+
+I used **Google Cloud Artifact Registry** to store and manage my Docker images. This ensures that every successful build from Cloud Build is versioned and safely stored, ready to be pulled by Cloud Run for deployment.
+
+![Artifact Registry](figures/gcp_artifact_registry.png)
+*(Screenshot: My Artifact Registry showing the container images and their tags)*
 
 ### Question 21
 
