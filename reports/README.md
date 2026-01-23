@@ -148,7 +148,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 3 fill here ---
+--- We utilized the **`contextlib`** module (specifically the `asynccontextmanager` decorator), which, while part of the Python standard library, was essential for our specific implementation. We used this functionality to define the **lifespan** of our FastAPI application. This allowed us to load our machine learning model and initialize the Google Cloud Storage client exactly once when the server starts, rather than reloading them for every single prediction request. This implementation was critical for performance, as it significantly reduced latency and memory overhead in our Google Cloud Run deployment. ---
 
 ## Coding environment
 
