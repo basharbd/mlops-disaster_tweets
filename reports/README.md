@@ -498,7 +498,10 @@ I used **Google Cloud Artifact Registry** to store and manage my Docker images. 
 >
 > Answer:
 
---- question 21 fill here ---
+I utilized **Google Cloud Build** to automate the container build process. By connecting Cloud Build to my GitHub repository, I set up a Continuous Integration (CI) pipeline where every push to the `main` branch automatically triggers a new build. The history below shows the successful builds where the Docker image was created and pushed to the Artifact Registry.
+
+![Cloud Build History](figures/gcp_cloud_build_history.png)
+*(Screenshot: The history of builds triggered by my git commits)*
 
 ### Question 22
 
