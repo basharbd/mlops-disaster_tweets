@@ -396,7 +396,12 @@ As seen in the screenshot above, I tracked the following critical metrics:
 >
 > Answer:
 
---- question 15 fill here ---
+
+Docker was the cornerstone of my MLOps pipeline, specifically for the **deployment phase**. I created a custom Docker image to containerize the FastAPI application, ensuring that the model runs in an identical environment (Linux, Python libraries, system dependencies) on both my local machine and Google Cloud Run. This isolated the application from the underlying infrastructure, preventing compatibility issues.
+
+To run the API container locally for testing, I use the following command:
+
+docker run -p 8080:8080 gcr.io/mlops-disaster/disaster-api:latest
 
 ### Question 16
 
@@ -411,7 +416,11 @@ As seen in the screenshot above, I tracked the following critical metrics:
 >
 > Answer:
 
---- question 16 fill here ---
+Since I worked alone, my debugging process relied heavily on **logging and isolation**.
+1.  **Local Debugging:** I tested individual components (like the GCS bucket connection) in isolated scripts within VS Code before integrating them into the API. I used the standard Python debugger and print statements to trace data flow.
+2.  **Cloud Debugging:** For deployment errors (like 503 Service Unavailable), I used **Google Cloud Logging**. Reading the container logs allowed me to identify specific issues like missing environment variables or credential failures that only occurred in the cloud environment.
+
+Regarding profiling, I did not use code-level profilers  as the inference logic is straightforward. However, I performed **Infrastructure Profiling**. As mentioned in previous sections, I analyzed the CPU and Memory usage via Cloud Monitoring to optimize the container's resource allocation, ensuring the application had enough RAM to load the model without crashing.
 
 ## Working in the cloud
 
@@ -428,7 +437,14 @@ As seen in the screenshot above, I tracked the following critical metrics:
 >
 > Answer:
 
---- question 17 fill here ---
+
+I utilized the following Google Cloud Platform (GCP) services to build a scalable MLOps pipeline:
+
+1.  **Cloud Storage (GCS):** acted as my "Data Lake," storing the raw dataset and the trained model artifacts.
+2.  **Cloud Build:** served as my CI/CD service. It automatically built my Docker images and deployed them whenever I pushed code to GitHub.
+3.  **Artifact Registry:** used to store and version-control the Docker images built by Cloud Build.
+4.  **Cloud Run:** the core deployment service. It allowed me to deploy the API container as a serverless application that automatically scales based on traffic.
+5.  **Cloud Operations Suite (Monitoring & Logging):** utilized for observability. Cloud Logging helped debug errors during deployment, while Cloud Monitoring allowed me to track resource usage (CPU/Memory).
 
 ### Question 18
 
@@ -443,7 +459,10 @@ As seen in the screenshot above, I tracked the following critical metrics:
 >
 > Answer:
 
---- question 18 fill here ---
+
+I utilized Compute Engine primarily through **Google Cloud Shell**. This service provided me with an ephemeral Virtual Machine (running Linux) that served as my primary development environment in the cloud. I used it to interact with the GCP CLI, build Docker images, and debug the bucket connections.
+
+For the production workload, I utilized Compute Engine resources indirectly via **Cloud Run**. While Cloud Run is serverless, it runs on top of Compute Engine infrastructure. I explicitly configured the underlying compute resources for my service, specifying instances with **4 vCPUs and 4GiB of Memory** to ensure the heavy Transformer model had sufficient computational power for inference.
 
 ### Question 19
 
