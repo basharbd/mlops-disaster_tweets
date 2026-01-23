@@ -752,7 +752,7 @@ Another hurdle was **Container Optimization**. Initially, I faced issues with "C
 
 
 **Individual Contribution:**
-I worked individually on this project, a setup that was explicitly approved by the course responsible (Nicki). Consequently, I, **Student sXXXXXX**, was responsible for every component of the MLOps pipeline.
+I worked individually on this project, a setup that was explicitly approved by the course responsible (Nicki). Consequently, I was responsible for every component of the MLOps pipeline.
 * **Development:** Setting up the project structure, `cookiecutter` template, and tracking data with DVC/GCS.
 * **Containerization:** Writing Dockerfiles for training and inference.
 * **CI/CD:** Configuring Google Cloud Build triggers and the Artifact Registry.
