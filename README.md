@@ -79,7 +79,7 @@ started with Machine Learning Operations (MLOps).
 
 ## Quickstart
 
-```bash
+
 # 1) clone + enter
 git clone https://github.com/basharbd/mlops-disaster_tweets.git
 cd mlops-disaster_tweets
