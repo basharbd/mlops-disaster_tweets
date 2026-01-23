@@ -690,7 +690,7 @@ While the FastAPI backend handles the heavy lifting (inference and logic), the S
 Answer:
 The figure below illustrates the simplified, end-to-end MLOps architecture I designed for this project, leveraging a fully serverless approach on Google Cloud Platform (GCP).
 
-![Architecture Diagram](figures/architecture_diagram.png)
+![Architecture Diagram](figures/architecture_diagram)
 
 **Architectural Steps Explanation:**
 
