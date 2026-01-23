@@ -14,3 +14,4 @@ wandb
 scikit-learn
 locust
 gcsfs
+dvc[gcs]
