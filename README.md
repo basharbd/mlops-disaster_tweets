@@ -30,7 +30,7 @@ We intend to leverage **Transfer Learning** rather than training a model from sc
 
 
 
-# MLOps Disaster Tweets Project
+
 
 ## 🚀 Deployment Status
 
