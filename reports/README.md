@@ -148,7 +148,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- We utilized the **`contextlib`** module (specifically the `asynccontextmanager` decorator), which, while part of the Python standard library, was essential for our specific implementation. We used this functionality to define the **lifespan** of our FastAPI application. This allowed us to load our machine learning model and initialize the Google Cloud Storage client exactly once when the server starts, rather than reloading them for every single prediction request. This implementation was critical for performance, as it significantly reduced latency and memory overhead in our Google Cloud Run deployment. ---
+I utilized the **`contextlib`** module (specifically the `asynccontextmanager` decorator), which, while part of the Python standard library, was essential for the specific implementation. I used this functionality to define the **lifespan** of our FastAPI application. This allowed us to load our machine learning model and initialize the Google Cloud Storage client exactly once when the server starts, rather than reloading them for every single prediction request. This implementation was critical for performance, as it significantly reduced latency and memory overhead in our Google Cloud Run deployment. 
 
 ## Coding environment
 
@@ -168,7 +168,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- I managed the project dependencies using a standard `requirements.txt` file. This file lists all necessary Python packages (such as `fastapi`, `uvicorn`, `google-cloud-storage`, `torch`, etc.) with pinned versions to ensure reproducibility across different environments.
+I managed the project dependencies using a standard `requirements.txt` file. This file lists all necessary Python packages (such as `fastapi`, `uvicorn`, `google-cloud-storage`, `torch`, etc.) with pinned versions to ensure reproducibility across different environments.
 
 For any potential new team member to get an exact copy of my development environment, they would need to follow this process:
 1. Clone the repository: `git clone <https://github.com/basharbd/mlops-disaster_tweets>`
@@ -176,7 +176,7 @@ For any potential new team member to get an exact copy of my development environ
 3. Activate the environment: `source venv/bin/activate` 
 4. Install dependencies: `pip install -r requirements.txt`
 
-This setup ensures that all developers and our Docker containers utilize the exact same library versions, preventing "it works on my machine" issues. ---
+This setup ensures that all developers and our Docker containers utilize the exact same library versions, preventing "it works on my machine" issues. 
 
 ### Question 5
 
@@ -192,9 +192,9 @@ This setup ensures that all developers and our Docker containers utilize the exa
 >
 > Answer:
 
---- I initialized the project using the course-provided cookiecutter template, which gave me a robust "src-layout" structure. The core source code resides in `src/disaster_tweets/`, containing modules for the model (`model.py`), data processing, and the API (`api.py`).
+I initialized the project using the course-provided cookiecutter template, which gave me a robust "src-layout" structure. The core source code resides in `src/disaster_tweets/`, containing modules for the model (`model.py`), data processing, and the API (`api.py`).
 
-I largely adhered to the template but made specific deviations to accommodate MLOps workflow. Most notably, we added a dedicated `dockerfiles/` directory to organize  different Docker builds (for training and API) rather than keeping them in the root. I also added `cloudbuild.yaml` files to the root to define our CI/CD pipelines for Google Cloud Build. I removed the documentation generation folders (like `docs`) as I focused on README-based documentation and the FastAPI automatic docs. ---
+I largely adhered to the template but made specific deviations to accommodate MLOps workflow. Most notably, we added a dedicated `dockerfiles/` directory to organize  different Docker builds (for training and API) rather than keeping them in the root. I also added `cloudbuild.yaml` files to the root to define our CI/CD pipelines for Google Cloud Build. I removed the documentation generation folders (like `docs`) as I focused on README-based documentation and the FastAPI automatic docs. 
 
 ### Question 6
 
@@ -209,11 +209,11 @@ I largely adhered to the template but made specific deviations to accommodate ML
 >
 > Answer:
 
---- For code quality, I prioritized standard formatting and typing to ensure the codebase remained maintainable , additionally I utilized **Black** for automatic code formatting to keep a consistent style without manual debate.
+For code quality, I prioritized standard formatting and typing to ensure the codebase remained maintainable , additionally I utilized **Black** for automatic code formatting to keep a consistent style without manual debate.
 
 A key part of the code quality strategy was the use of **Type Hinting**, particularly within  FastAPI implementation. By using **Pydantic models** (e.g., `class PredictRequest(BaseModel)`), I enforced strict typing on incoming data, which automatically handles validation and reduces runtime errors.
 
-These concepts are vital in larger projects because they act as self-documentation. When multiple developers work on the same codebase, type hints and consistent formatting drastically reduce cognitive load, making it easier to understand function interfaces and prevent bugs caused by mismatched data types. ---
+These concepts are vital in larger projects because they act as self-documentation. When multiple developers work on the same codebase, type hints and consistent formatting drastically reduce cognitive load, making it easier to understand function interfaces and prevent bugs caused by mismatched data types. 
 
 ## Version control
 
@@ -232,8 +232,7 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- I implemented approximately 5-8 core tests focusing on the most critical components of the pipeline. Primarily I tested the **Model Architecture** (ensuring input/output tensor shapes are correct) and the **API Endpoints** (verifying that the `/predict` route returns a valid JSON response with the expected keys). These tests ensure that the fundamental building blocks of the application are functioning before deployment. ---
-
+I implemented approximately 5-8 core tests focusing on the most critical components of the pipeline. Primarily I tested the **Model Architecture** (ensuring input/output tensor shapes are correct) and the **API Endpoints** (verifying that the `/predict` route returns a valid JSON response with the expected keys). These tests ensure that the fundamental building blocks of the application are functioning before deployment.
 ### Question 8
 
 > **What is the total code coverage (in percentage) of your code? If your code had a code coverage of 100% (or close**
@@ -266,9 +265,9 @@ Furthermore, unit tests often rely on mocked data and services. A system with 10
 >
 > Answer:
 
---- As I worked alone on this project, my workflow primarily involved working directly on the `main` branch to ensure rapid iteration and deployment, especially when troubleshooting the Cloud Run integration. I did not strictly enforce Pull Requests (PRs) for every change since I was the sole reviewer.
+As I worked alone on this project, my workflow primarily involved working directly on the `main` branch to ensure rapid iteration and deployment, especially when troubleshooting the Cloud Run integration. I did not strictly enforce Pull Requests (PRs) for every change since I was the sole reviewer.
 
-However, I understand that in a production or team setting, branches and PRs are essential for version control. They serve as a "gatekeeper" for the `main` branch, ensuring it always remains in a deployable state. Using PRs allows for **Code Review** (catching bugs before merge) and triggers **Automated CI Checks** (running tests on the branch before it touches production code). If I were to scale this project, I would implement a `dev` branch and require PRs to merge into `main` to prevent breaking changes from reaching the deployment pipeline. ---
+However, I understand that in a production or team setting, branches and PRs are essential for version control. They serve as a "gatekeeper" for the `main` branch, ensuring it always remains in a deployable state. Using PRs allows for **Code Review** (catching bugs before merge) and triggers **Automated CI Checks** (running tests on the branch before it touches production code). If I were to scale this project, I would implement a `dev` branch and require PRs to merge into `main` to prevent breaking changes from reaching the deployment pipeline.
 
 ### Question 10
 
@@ -283,10 +282,9 @@ However, I understand that in a production or team setting, branches and PRs are
 >
 > Answer:
 
---- Answer:
 Yes, I used **DVC (Data Version Control)** in the project to manage my dataset, I initialized DVC to track the `data/` folder.
 
-This setup was highly beneficial because it allowed me to decouple the large dataset files from the Git repository. By adding the data folder to DVC, I could store the actual heavy files in remote storage (like Google Drive or a local cache) while only tracking the lightweight `.dvc` pointer files in Git. This kept the repository size small and ensured that the specific version of the code was always linked to the specific version of the data used for training, enabling full reproducibility of my experiments. ---
+This setup was highly beneficial because it allowed me to decouple the large dataset files from the Git repository. By adding the data folder to DVC, I could store the actual heavy files in remote storage (like Google Drive or a local cache) while only tracking the lightweight `.dvc` pointer files in Git. This kept the repository size small and ensured that the specific version of the code was always linked to the specific version of the data used for training, enabling full reproducibility of my experiments. 
 
 ### Question 11
 
