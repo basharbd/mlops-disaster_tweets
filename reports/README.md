@@ -471,7 +471,12 @@ For the production workload, I utilized Compute Engine resources indirectly via 
 >
 > Answer:
 
---- question 19 fill here ---
+
+
+I utilized **Google Cloud Storage (GCS)** as the central data repository for the project. By storing the dataset (`data/`) and model outputs (`predictions/`) in a GCS bucket, I ensured that the data is decoupled from the compute instances. This allows any component of the pipeline (Cloud Run, Cloud Build, or local developers) to access the single source of truth securely.
+
+![Bucket Content](figures/gcp_bucket_root.png)
+*(Screenshot: The root directory of my bucket `dt-bucket-bashar-2026` showing the project structure)*
 
 ### Question 20
 
