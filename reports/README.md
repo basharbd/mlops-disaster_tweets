@@ -720,7 +720,19 @@ The architecture follows a streamlined flow from local development to production
 >
 > Answer:
 
---- question 30 fill here ---
+
+The most significant struggle in this project was not the machine learning modeling itself, but rather the **Cloud Infrastructure Configuration and IAM (Identity and Access Management)**.
+
+**Where I spent the most time:**
+I spent the majority of the project time debugging "Permission Denied" errors and deployment failures. Moving from a local environment (where I have full root access) to a secure cloud environment meant that every service (Cloud Build, Cloud Run, Cloud Storage) needed explicit permissions to communicate with the others. Configuring the Service Accounts correctly to allow Cloud Run to access the GCS bucket without exposing credentials was particularly challenging and time-consuming.
+
+**Other Challenges:**
+Another hurdle was **Container Optimization**. Initially, I faced issues with "Cold Starts" where the application took too long to become ready, leading to timeouts. I also encountered memory issues (OOM) because the BERT model is resource-intensive.
+
+**How I overcame these challenges:**
+1.  **Observability:** I shifted my debugging strategy from guessing to using **Google Cloud Logging**. Reading the structured logs helped me identify exactly which environment variable or permission was missing.
+2.  **Iterative Deployment:** I adopted a "fail fast" approach. Instead of trying to build the whole pipeline at once, I deployed the simplest possible "Hello World" container first to verify the network and permissions, and then incrementally added the ML model and complex logic.
+3.  **Right-Sizing:** I used Cloud Monitoring to analyze the memory footprint and adjusted the Cloud Run resources to 4GB RAM to ensure stability.
 
 ### Question 31
 
@@ -738,4 +750,17 @@ The architecture follows a streamlined flow from local development to production
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+
+**Individual Contribution:**
+I worked individually on this project, a setup that was explicitly approved by the course responsible (Nicki). Consequently, I, **Student sXXXXXX**, was responsible for every component of the MLOps pipeline.
+* **Development:** Setting up the project structure, `cookiecutter` template, and tracking data with DVC/GCS.
+* **Containerization:** Writing Dockerfiles for training and inference.
+* **CI/CD:** Configuring Google Cloud Build triggers and the Artifact Registry.
+* **Deployment:** Deploying the API and Frontend to Google Cloud Run and managing IAM permissions.
+* **Monitoring:** implementing logging and health checks via Cloud Monitoring.
+
+**Use of Generative AI:**
+I actively utilized Generative AI tools (specifically ChatGPT/Gemini) throughout the project to enhance productivity and learning:
+1.  **Debugging:** AI was instrumental in interpreting complex Google Cloud error logs (especially regarding IAM roles and service account permissions).
+2.  **Boilerplate Code:** I used AI to generate initial drafts for configuration files (YAML for Cloud Build) and standard Dockerfile syntax, which I then customized for my specific requirements.
+
