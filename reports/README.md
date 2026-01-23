@@ -282,9 +282,12 @@ However, I understand that in a production or team setting, branches and PRs are
 >
 > Answer:
 
-Yes, I used **DVC (Data Version Control)** in the project to manage my dataset, I initialized DVC to track the `data/` folder.
+Yes, I used DVC (Data Version Control) to track part of the dataset in my project, specifically the processed data folder (data/processed) through a tracked pointer file (data/processed.dvc). This approach helped separate large data artifacts from the Git repository, keeping the repository lightweight and easier to clone and maintain.
 
-This setup was highly beneficial because it allowed me to decouple the large dataset files from the Git repository. By adding the data folder to DVC, I could store the actual heavy files in remote storage (like Google Drive or a local cache) while only tracking the lightweight `.dvc` pointer files in Git. This kept the repository size small and ensured that the specific version of the code was always linked to the specific version of the data used for training, enabling full reproducibility of my experiments. 
+The main advantage of DVC is reproducibility: it creates an explicit link between a specific code version (Git commit) and the exact data version used for training. This is especially important in machine learning projects, where small changes in preprocessing or dataset composition can significantly impact model performance.
+
+In a more extended setup, DVC can store the actual data in a remote backend (e.g., Google Cloud Storage), enabling team members or CI pipelines to fetch the correct dataset version using dvc pull without manually transferring files.
+
 
 ### Question 11
 
@@ -336,13 +339,7 @@ Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd
 > Answer:
 
 
-I configured my experiments using **Hydra**, which allowed me to separate configuration from code. I defined all my hyperparameters (like learning rate, batch size) ).
-
-This setup made it easy to run different experiments without changing the code. To run a new experiment, I simply overrode the specific parameters from the command line.
-
-**Example:**
-
-python src/models/train_model.py training.lr=0.001 training.batch_size=64
+We did not use Hydra or an argparse-based CLI in the final codebase. Instead, experiments were configured in a lightweight, script-driven way: we reran the training entry point and adjusted key hyperparameters directly in the training script (e.g., learning rate, batch size, epochs). Each run produced separate logged outputs (including lightning_logs/*/hparams.yaml), which serves as a record of the settings used per experiment.
 
 ### Question 13
 
