@@ -232,7 +232,7 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- question 7 fill here ---
+--- I implemented approximately 5-8 core tests focusing on the most critical components of the pipeline. Primarily I tested the **Model Architecture** (ensuring input/output tensor shapes are correct) and the **API Endpoints** (verifying that the `/predict` route returns a valid JSON response with the expected keys). These tests ensure that the fundamental building blocks of the application are functioning before deployment. ---
 
 ### Question 8
 
@@ -247,7 +247,7 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- question 8 fill here ---
+--- The total code coverage is approximately 40-50% , focused testing on the model logic and API interface rather than auxiliary scripts. Even if I achieved 100% coverage, I would not trust the code to be entirely error-free. High coverage only confirms that lines of code are *executed* during tests, not that the logic is semantically correct. In Machine Learning, logical errors (like data leakage or incorrect preprocessing stats) can persist even if the code runs without crashing. Therefore, validation on real data is just as important as unit test coverage. ---
 
 ### Question 9
 
@@ -262,7 +262,9 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- question 9 fill here ---
+--- As I worked alone on this project, my workflow primarily involved working directly on the `main` branch to ensure rapid iteration and deployment, especially when troubleshooting the Cloud Run integration. I did not strictly enforce Pull Requests (PRs) for every change since I was the sole reviewer.
+
+However, I understand that in a production or team setting, branches and PRs are essential for version control. They serve as a "gatekeeper" for the `main` branch, ensuring it always remains in a deployable state. Using PRs allows for **Code Review** (catching bugs before merge) and triggers **Automated CI Checks** (running tests on the branch before it touches production code). If I were to scale this project, I would implement a `dev` branch and require PRs to merge into `main` to prevent breaking changes from reaching the deployment pipeline. ---
 
 ### Question 10
 
@@ -277,7 +279,10 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- question 10 fill here ---
+--- Answer:
+Yes, I used **DVC (Data Version Control)** in the project to manage my dataset, I initialized DVC to track the `data/` folder.
+
+This setup was highly beneficial because it allowed me to decouple the large dataset files from the Git repository. By adding the data folder to DVC, I could store the actual heavy files in remote storage (like Google Drive or a local cache) while only tracking the lightweight `.dvc` pointer files in Git. This kept the repository size small and ensured that the specific version of the code was always linked to the specific version of the data used for training, enabling full reproducibility of my experiments. ---
 
 ### Question 11
 
@@ -294,7 +299,18 @@ These concepts are vital in larger projects because they act as self-documentati
 >
 > Answer:
 
---- question 11 fill here ---
+--- For Continuous Integration (CI), I utilized **Google Cloud Build** as the core automation engine. My CI pipeline is defined in the `cloudbuild.yaml` configuration file.
+
+The primary focus of my CI setup is **Container Integration and Deployment**. Instead of running a matrix of tests across different operating systems and Python versions, I adopted a **Container-First strategy**. By packaging the application into a Docker container, I ensure a single, consistent Linux-based environment that remains identical from development to production. This eliminates the need for multi-OS testing.
+
+The pipeline performs the following steps:
+1.  **Build:** It builds the Docker image for the API using the `dockerfiles/api.dockerfile`.
+2.  **Push:** It pushes the tagged image to the Google Artifact Registry.
+3.  **Deploy:** It automatically updates the Google Cloud Run service with the new image.
+
+Regarding caching, I leverage **Docker Layer Caching**. When Cloud Build runs, it reuses unchanged layers from previous builds (like the installation of `requirements.txt`), which significantly reduces the build time for minor code changes.
+
+Link to workflow configuration: [Cloud Build Config](https://github.com/basharbd/mlops-disaster_tweets/blob/main/cloudbuild.yaml) ---
 
 ## Running code and tracking experiments
 
