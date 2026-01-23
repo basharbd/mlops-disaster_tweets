@@ -25,25 +25,7 @@ We intend to leverage **Transfer Learning** rather than training a model from sc
 ---
 
 
-## Quickstart
 
-
-# 1) clone + enter
-git clone https://github.com/basharbd/mlops-disaster_tweets.git
-cd mlops-disaster_tweets
-
-# 2) create env (conda) + install
-conda create -n mlops-disaster python=3.11 -y
-conda activate mlops-disaster
-pip install -r requirements.txt
-pip install -r requirements_dev.txt
-
-# 3) prepare data + train + test
-python -m disaster_tweets.data
-python -m disaster_tweets.train
-pytest -q
-
-----
 
 
 
